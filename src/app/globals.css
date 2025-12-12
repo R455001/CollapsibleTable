@@ -152,6 +152,11 @@ table > tbody {
   display: none;
 }
 
+.pxs_table_wr table tbody .mobile-row td {
+  padding: 10px 15px;
+  background-color: #f0f2f6;
+}
+
 .mobile-row ul {
   display: flex;
   flex-direction: column;

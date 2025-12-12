@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import CollapsibleTable from "./components/CollapsibleTable";
 import { useResponsiveColumns } from "./components/useResponsiveColumns";
 
@@ -15,12 +15,19 @@ export default function Page() {
     {
       header: "Status",
       accessor: "status",
-      render: (value, row) => (
+      render: (value, row, tableData, setTableData) => (
         <label className="switch">
           <input
             type="checkbox"
             checked={value}
-            onChange={() => (row.status = !row.status)}
+            onChange={() => {
+              setTableData((prev) =>
+                prev.map((item) =>
+                  item.id === row.id ? { ...item, status: !item.status } : item
+                )
+              );
+              console.log("Status toggled:", row.id);
+            }}
           />
           <span className="slider"></span>
         </label>
@@ -31,17 +38,24 @@ export default function Page() {
       accessor: "actions",
       render: (_, row) => (
         <div className="actions">
-          <button className="btn btn-edit">Edit</button>
-          <button className="btn btn-delete">Delete</button>
+          <button
+            className="btn btn-edit"
+            onClick={() => console.log("Edit clicked:", row)}
+          >
+            Edit
+          </button>
+          <button
+            className="btn btn-delete"
+            onClick={() => console.log("Delete clicked:", row)}
+          >
+            Delete
+          </button>
         </div>
       ),
     },
   ];
 
-  // responsive visible columns based on screen width
-  const visibleColumns = useResponsiveColumns(columns.length);
-
-  const data = [...Array(100)].map((_, i) => ({
+  const initialData = [...Array(100)].map((_, i) => ({
     id: i + 1,
     name: `User ${i + 1}`,
     email: `user${i + 1}@mail.com`,
@@ -51,18 +65,22 @@ export default function Page() {
     status: i % 2 === 0,
   }));
 
+  const [tableData, setTableData] = useState(initialData);
+
+  const visibleColumns = useResponsiveColumns(columns.length);
+
   const [tableState, setTableState] = useState({
     page: 1,
     rowsPerPage: 10,
-    total: data.length,
+    total: tableData.length,
   });
 
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
+    if (!searchTerm) return tableData;
 
-    return data.filter((row) =>
+    const result = tableData.filter((row) =>
       columns.some((col) => {
         const value = row[col.accessor];
         return value
@@ -71,7 +89,14 @@ export default function Page() {
           .includes(searchTerm.toLowerCase());
       })
     );
-  }, [searchTerm, data, columns]);
+
+    console.log("Search term:", searchTerm, "| Results:", result.length);
+    return result;
+  }, [searchTerm, tableData, columns]);
+
+  useEffect(() => {
+    console.log("Table state:", tableState);
+  }, [tableState]);
 
   return (
     <div className="page-container">
@@ -116,6 +141,8 @@ export default function Page() {
         visibleColumns={visibleColumns}
         state={tableState}
         setstate={setTableState}
+        tableData={tableData}
+        setTableData={setTableData}
       />
     </div>
   );

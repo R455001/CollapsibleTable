@@ -9,6 +9,8 @@ export default function CollapsibleTable({
   addClass = "",
   state = {},
   setstate = () => {},
+  tableData,
+  setTableData,
 }) {
   const [expandedRows, setExpandedRows] = useState({});
   const { rowsPerPage = 10, page = 1 } = state || {};
@@ -16,22 +18,22 @@ export default function CollapsibleTable({
   const totalFiltered = data.length;
   const totalPages = Math.ceil(totalFiltered / rowsPerPage);
 
-  const toggleRow = (index) => {
+  const toggleRow = (index) =>
     setExpandedRows((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
 
   const handlePageChange = (pag) => {
-    if (pag > 0 && pag <= totalPages) {
-      setstate({ ...state, page: pag });
-    }
+    if (pag > 0 && pag <= totalPages) setstate({ ...state, page: pag });
   };
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
 
   const getPaginationButtons = () => {
     const buttons = [];
     const maxButtons = 4;
 
     if (totalPages <= maxButtons) {
-      for (let i = 1; i <= totalPages; i++) {
+      for (let i = 1; i <= totalPages; i++)
         buttons.push(
           <button
             key={i}
@@ -41,7 +43,6 @@ export default function CollapsibleTable({
             {i}
           </button>
         );
-      }
     } else {
       buttons.push(
         <button
@@ -56,7 +57,7 @@ export default function CollapsibleTable({
       const start = Math.max(1, page - 1);
       const end = Math.min(totalPages, page + 1);
 
-      for (let i = start; i <= end; i++) {
+      for (let i = start; i <= end; i++)
         buttons.push(
           <button
             key={i}
@@ -66,7 +67,6 @@ export default function CollapsibleTable({
             {i}
           </button>
         );
-      }
 
       buttons.push(
         <button
@@ -81,9 +81,6 @@ export default function CollapsibleTable({
 
     return buttons;
   };
-
-  const startIndex = (page - 1) * rowsPerPage;
-  const paginatedData = data.slice(startIndex, startIndex + rowsPerPage);
 
   return (
     <div className={`pxs_table_wr ${addClass}`}>
@@ -107,11 +104,9 @@ export default function CollapsibleTable({
           {paginatedData.length > 0 ? (
             paginatedData.map((row, rowIndex) => (
               <React.Fragment key={startIndex + rowIndex}>
-                {/* MAIN ROW */}
                 <tr>
                   {columns.map((col, colIndex) => {
                     const isFirstVisible = colIndex === visibleColumns[0];
-
                     return (
                       <td
                         key={colIndex}
@@ -121,7 +116,6 @@ export default function CollapsibleTable({
                             : "hidden-on-mobile"
                         }
                       >
-                        {/* EVERYTHING INSIDE ONE DIV */}
                         <div className={col.accessor}>
                           {isFirstVisible && (
                             <button
@@ -137,7 +131,12 @@ export default function CollapsibleTable({
                           )}
 
                           {col.render
-                            ? col.render(row[col.accessor], row)
+                            ? col.render(
+                                row[col.accessor],
+                                row,
+                                tableData,
+                                setTableData
+                              )
                             : row[col.accessor]}
                         </div>
                       </td>
@@ -145,7 +144,6 @@ export default function CollapsibleTable({
                   })}
                 </tr>
 
-                {/* MOBILE EXPANDED ROW */}
                 {expandedRows[startIndex + rowIndex] && (
                   <tr className="mobile-row">
                     <td colSpan={columns.length + 1}>
@@ -157,7 +155,12 @@ export default function CollapsibleTable({
                                 <strong>{col.header}:</strong>{" "}
                                 <div className={col.accessor}>
                                   {col.render
-                                    ? col.render(row[col.accessor], row)
+                                    ? col.render(
+                                        row[col.accessor],
+                                        row,
+                                        tableData,
+                                        setTableData
+                                      )
                                     : row[col.accessor]}
                                 </div>
                               </li>
