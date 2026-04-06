@@ -1,8 +1,17 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import CollapsibleTable from "./components/CollapsibleTable";
-import { useResponsiveColumns } from "./components/useResponsiveColumns";
+import { useEffect, useState, useMemo } from "react";
+import CollapsibleTable from "./components/table/CollapsibleTable";
+import { useResponsiveColumns } from "./components/table/useResponsiveColumns";
+
+const breakpoints = {
+  1200: { columns: 8 },
+  991: { columns: 6 },
+  768: { columns: 5 },
+  575: { columns: 4 },
+  360: { columns: 3 },
+  0: { columns: 2 },
+};
 
 export default function Page() {
   const columns = [
@@ -15,7 +24,7 @@ export default function Page() {
     {
       header: "Status",
       accessor: "status",
-      render: (value, row, tableData, setTableData) => (
+      render: (value, row, index, tableData, setTableData) => (
         <label className="switch">
           <input
             type="checkbox"
@@ -23,10 +32,14 @@ export default function Page() {
             onChange={() => {
               setTableData((prev) =>
                 prev.map((item) =>
-                  item.id === row.id ? { ...item, status: !item.status } : item
-                )
+                  item.id === row.id ? { ...item, status: !item.status } : item,
+                ),
               );
-              console.log("Status toggled:", row.id);
+              // Log to console
+              console.log(
+                `Status for ${row.name} (ID: ${row.id}) changed to`,
+                !value,
+              );
             }}
           />
           <span className="slider"></span>
@@ -40,13 +53,13 @@ export default function Page() {
         <div className="actions">
           <button
             className="btn btn-edit"
-            onClick={() => console.log("Edit clicked:", row)}
+            onClick={() => console.log("Edit:", row)}
           >
             Edit
           </button>
           <button
             className="btn btn-delete"
-            onClick={() => console.log("Delete clicked:", row)}
+            onClick={() => console.log("Delete:", row)}
           >
             Delete
           </button>
@@ -66,71 +79,37 @@ export default function Page() {
   }));
 
   const [tableData, setTableData] = useState(initialData);
-
-  const visibleColumns = useResponsiveColumns(columns.length);
-
-  const [tableState, setTableState] = useState({
-    page: 1,
-    rowsPerPage: 10,
-    total: tableData.length,
-  });
-
+  const visibleColumns = useResponsiveColumns(columns.length, breakpoints);
+  const [tableState, setTableState] = useState({ page: 1, rowsPerPage: 10 });
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return tableData;
-
-    const result = tableData.filter((row) =>
-      columns.some((col) => {
-        const value = row[col.accessor];
-        return value
+    return tableData.filter((row) =>
+      columns.some((col) =>
+        row[col.accessor]
           ?.toString()
           .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      })
+          .includes(searchTerm.toLowerCase()),
+      ),
     );
-
-    console.log("Search term:", searchTerm, "| Results:", result.length);
-    return result;
   }, [searchTerm, tableData, columns]);
 
   useEffect(() => {
-    console.log("Table state:", tableState);
-  }, [tableState]);
+    setTableState((prev) => ({ ...prev, page: 1 }));
+  }, [searchTerm]);
 
   return (
     <div className="page-container">
       <div className="pxs_page_title">
         <h6>User’s List</h6>
-        <div className="pxs_page_title_inner">
-          <div className="pxs_main_input">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="pxs_rows_select">
-            <label>Rows per page:</label>
-            <select
-              value={tableState.rowsPerPage}
-              onChange={(e) =>
-                setTableState({
-                  ...tableState,
-                  page: 1,
-                  rowsPerPage: parseInt(e.target.value, 10),
-                })
-              }
-            >
-              {[5, 10, 20, 50].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="pxs_main_input">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
@@ -140,7 +119,9 @@ export default function Page() {
         addClass="user_table"
         visibleColumns={visibleColumns}
         state={tableState}
-        setstate={setTableState}
+        setstate={(newState) =>
+          setTableState((prev) => ({ ...prev, ...newState }))
+        }
         tableData={tableData}
         setTableData={setTableData}
       />

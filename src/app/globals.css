@@ -18,7 +18,9 @@ body {
 input,
 select,
 button {
-  font-family: Lexend Deca, sans-serif;
+  font-family:
+    Lexend Deca,
+    sans-serif;
   font-size: 14px;
   font-weight: 300;
   outline: none;
@@ -87,20 +89,21 @@ h6 {
 
 /* Table */
 
-table > thead,
-table > tbody {
-  vertical-align: middle;
-}
-
 .pxs_table_wr {
+  -webkit-overflow-scrolling: touch;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .pxs_table_wr table {
   width: 100%;
   border-spacing: 0px 5px;
+}
+
+table > thead,
+table > tbody {
+  vertical-align: middle;
 }
 
 .pxs_table_wr table thead {
@@ -122,14 +125,6 @@ table > tbody {
   overflow: unset;
 }
 
-.pxs_table_wr table tbody tr td > div {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  line-clamp: 1;
-}
-
 .pxs_table_wr table tbody th,
 .pxs_table_wr table tbody td,
 .pxs_table_wr table thead th,
@@ -149,7 +144,7 @@ table > tbody {
 
 /* Mobile row */
 .mobile-row {
-  display: none;
+  display: contents;
 }
 
 .pxs_table_wr table tbody .mobile-row td {
@@ -174,13 +169,13 @@ table > tbody {
 }
 
 .hidden-on-mobile {
-  display: table-cell;
+  display: none;
 }
 
 /* Collapse Button */
 
 .expand-btn {
-  display: none;
+  display: inline-block;
   cursor: pointer;
   margin-right: 10px;
 }
@@ -280,40 +275,81 @@ input:checked + .slider:before {
 /* Table Pagination */
 
 .pxs_table_pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-  gap: 10px;
-}
-
-.pxs_table_pagination button {
-  background-color: #e7ecfb;
+  background: #e7ecfb;
   border-radius: 6px;
-  min-width: 40px;
-  padding: 10px;
-  transition: all 0.3s;
+  border: 1px solid #e7ecfb;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 15px 40px;
+  max-width: fit-content;
+  margin: 20px auto 0;
+  padding: 10px 15px;
+  display: flex;
 }
 
-.pxs_table_pagination button:hover,
-.pxs_table_pagination button.active {
-  background-color: #15b61c;
+.pxs_pagination_info {
+  align-items: center;
+  gap: 10px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pxs_pagination_info p {
+  white-space: nowrap;
+}
+
+.pxs_pagination_info .pxs_main_input {
+  align-items: center;
+  gap: 5px;
+  display: flex;
+}
+
+.pxs_pagination_info .pxs_main_input select {
+  cursor: pointer;
+  min-height: 35px;
+}
+
+.pxs_pagination_controls {
+  align-items: center;
+  gap: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pxs_pagination_controls button {
+  background: none;
+  border-radius: 6px;
+  min-width: 35px;
+  height: 35px;
+  cursor: pointer;
+}
+
+.pxs_pagination_controls button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pxs_pagination_controls button.active {
+  background-color: #4ade80;
   color: #fff;
 }
 
-.pxs_table_pagination button:disabled {
-  background-color: #e7ecfb;
-  color: #757575;
+.fs_14 {
+  font-size: 14px;
 }
 
-@media (max-width: 991.98px) {
-  .mobile-row {
-    display: contents;
-  }
-  .hidden-on-mobile {
-    display: none;
-  }
-  .expand-btn {
-    display: inline;
-  }
+.fs_16 {
+  font-size: 16px;
+}
+
+.fs_18 {
+  font-size: 18px;
+}
+
+.fs_20 {
+  font-size: 20px;
 }
