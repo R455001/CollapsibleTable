@@ -7,7 +7,7 @@ export default function Skeleton({ type }) {
     return (
       <div
         className="skeleton-table-cell"
-        style={{ background: "#eee", height: "20px", borderRadius: "4px" }}
+        style={{ background: "#eeeeee", height: "20px", borderRadius: "4px" }}
       />
     );
   }
